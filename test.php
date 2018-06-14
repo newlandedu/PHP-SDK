@@ -13,21 +13,19 @@
 <?php
 require 'nlecloudsdk.php';
 
-$apiurl = 'http://192.168.14.221:902';	//测试地址，请修改为服务器正式地址，或直接为空
-$token = '';
+$token = '';						//存储登录成功返回临时Token,用于请求其它API的凭证
 
-
-$userName = '13800000011';       //测试帐号
-$password = '123456';           //测试密码
-$projectID = "6547";			//测试的项目ID
-$gatewayID = "6549";			//测试的设备ID
-$gatewayTag = "rt34534534";     //测试的设备标识
-$sensorApiTag = "sensor";       //测试的传感器ApiTag
-$actuatorApiTag = "actuator";   //测试的执行器ApiTag
-$cametaApiTag = "gvludezqnzhq"; //测试的摄像头ApiTag
+$userName = '18965562233';			//测试帐号
+$password = '123456';				//测试密码
+$projectID = "282";					//测试的项目ID
+$deviceID = "282";					//测试的设备ID
+$Tag = 'P97E1000479';				//测试重复添加设备的标识
+$sensorApiTag = "m_temperature";	//测试的传感器ApiTag
+$actuatorApiTag = "nl_fan";			//测试的执行器ApiTag
+$cametaApiTag = "newCamera";		//测试的摄像头ApiTag
 
 //创建api对象
-$nleApi = new NLECloudSDK($apiurl);
+$nleApi = new NLECloudSDK();
 
 echo "<b>用户登录（同时返回AccessToken）:</br ></b>";
 
@@ -92,7 +90,7 @@ var_dump($response);
 
 
 echo "</br ></br ><b>批量查询设备最新数据:</br ></b>";
-$deviceIds=$gatewayID;
+$deviceIds=$deviceID;
 $response = $nleApi->get_devices_datas($deviceIds, $token);
 if (!$response)
 {
@@ -104,7 +102,7 @@ var_dump($response);
 
 
 echo "</br ></br ><b>批量查询设备的在线状态:</br ></b>";
-$deviceIds=$gatewayID;
+$deviceIds=$deviceID;
 $response = $nleApi->get_devices_status($deviceIds, $token);
 if (!$response)
 {
@@ -116,7 +114,7 @@ var_dump($response);
 
 
 echo "</br ></br ><b>查询单个设备:</br ></b>";
-$response = $nleApi->get_device_info($gatewayID, $token);
+$response = $nleApi->get_device_info($deviceID, $token);
 if (!$response)
 {
     //处理错误信息
@@ -211,7 +209,7 @@ var_dump($response);
 var_dump($nleApi->get_device_info($deviceAdd->DeviceId, $token));
 
 echo "</br ></br ><b>查询单个传感器:</br ></b>";
-$response = $nleApi->get_sensor_info($gatewayID, $sensorApiTag, $token);
+$response = $nleApi->get_sensor_info($deviceID, $sensorApiTag, $token);
 if (!$response)
 {
     //处理错误信息
@@ -221,7 +219,7 @@ if (!$response)
 var_dump($response);
 
 echo "</br ></br ><b>模糊查询传感器:</br ></b>";
-$response = $nleApi->get_sensors($gatewayID, $sensorApiTag, $token);
+$response = $nleApi->get_sensors($deviceID, $sensorApiTag, $token);
 if (!$response)
 {
     //处理错误信息
@@ -233,7 +231,7 @@ var_dump($response);
 echo "</br ></br ><b>添加个新传感器:</br ></b>";
 
 $sensorAdd = new SensorAddUpdate();
-$sensorAdd->DeviceId = $gatewayID;
+$sensorAdd->DeviceId = $deviceID;
 $sensorAdd->ApiTag = "s".time();
 $sensorAdd->Name =time();
 $sensorAdd->TransType=1;
@@ -247,12 +245,12 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $sensorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $sensorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>添加个新执行器:</br ></b>";
 
 $actorAdd = new ActorAddUpdate();
-$actorAdd->DeviceId = $gatewayID;
+$actorAdd->DeviceId = $deviceID;
 $actorAdd->ApiTag = "a".time();
 $actorAdd->Name =time();
 $actorAdd->TransType=1;
@@ -267,12 +265,12 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $actorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $actorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>添加个新摄像头:</br ></b>";
 
 $cameraAdd = new CameraAddUpdate();
-$cameraAdd->DeviceId = $gatewayID;
+$cameraAdd->DeviceId = $deviceID;
 $cameraAdd->ApiTag = "c".time();
 $cameraAdd->Name =time();
 $cameraAdd->TransType=1;
@@ -289,12 +287,12 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $cameraAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $cameraAdd->ApiTag, $token));
 
 echo "</br ></br ><b>更新某个传感器:</br ></b>";
 
 $sensorUpdate = new SensorAddUpdate();
-$sensorUpdate->DeviceId = $gatewayID;
+$sensorUpdate->DeviceId = $deviceID;
 $sensorUpdate->ApiTag = $sensorAdd->ApiTag;
 $sensorUpdate->Name =time();
 $sensorUpdate->TransType=0;
@@ -308,12 +306,12 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $sensorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $sensorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>更新某个执行器:</br ></b>";
 
 $actorUpdate = new ActorAddUpdate();
-$actorUpdate->DeviceId = $gatewayID;
+$actorUpdate->DeviceId = $deviceID;
 $actorUpdate->ApiTag = $actorAdd->ApiTag;
 $actorUpdate->Name =time();
 $actorUpdate->TransType=0;
@@ -328,12 +326,12 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $actorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $actorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>更新某个摄像头:</br ></b>";
 
 $cameraUpdate = new CameraAddUpdate();
-$cameraUpdate->DeviceId = $gatewayID;
+$cameraUpdate->DeviceId = $deviceID;
 $cameraUpdate->ApiTag = $cameraAdd->ApiTag;
 $cameraUpdate->Name =time();
 $cameraUpdate->TransType=0;
@@ -350,11 +348,11 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $cameraAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $cameraAdd->ApiTag, $token));
 
 echo "</br ></br ><b>删除某个传感器:</br ></b>";
 
-$response = $nleApi->delete_sensor($gatewayID, $sensorAdd->ApiTag, $token);
+$response = $nleApi->delete_sensor($deviceID, $sensorAdd->ApiTag, $token);
 if (!$response)
 {
     //处理错误信息
@@ -362,11 +360,11 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $sensorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $sensorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>删除某个执行器:</br ></b>";
 
-$response = $nleApi->delete_sensor($gatewayID, $actorAdd->ApiTag, $token);
+$response = $nleApi->delete_sensor($deviceID, $actorAdd->ApiTag, $token);
 if (!$response)
 {
     //处理错误信息
@@ -374,11 +372,11 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $actorAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $actorAdd->ApiTag, $token));
 
 echo "</br ></br ><b>删除某个摄像头:</br ></b>";
 
-$response = $nleApi->delete_sensor($gatewayID, $cameraAdd->ApiTag, $token);
+$response = $nleApi->delete_sensor($deviceID, $cameraAdd->ApiTag, $token);
 if (!$response)
 {
     //处理错误信息
@@ -386,7 +384,7 @@ if (!$response)
     $error = $nleApi->error();
 }
 var_dump($response);
-var_dump($nleApi->get_sensor_info($gatewayID, $cameraAdd->ApiTag, $token));
+var_dump($nleApi->get_sensor_info($deviceID, $cameraAdd->ApiTag, $token));
 
 echo "</br ></br ><b>新增传感数据:</br ></b>";
 
@@ -400,7 +398,7 @@ $sensorDataArray[0]->PointDTO[0]->RecordTime="2018-01-01 00:00:00";
 $sensorDataArray[1]->PointDTO[0]->Value=time();
 $sensorDataArray[1]->PointDTO[0]->RecordTime="2018-02-01 00:00:00";
 
-$response = $nleApi->add_sensor_data($gatewayID,$sensorDataArray, $token);
+$response = $nleApi->add_sensor_data($deviceID,$sensorDataArray, $token);
 if (!$response)
 {
     //处理错误信息
@@ -412,7 +410,7 @@ var_dump($response);
 
 echo "</br ></br ><b>查询传感数据:</br ></b>";
 $sensorDataQuery=new SensorDataQuery();
-$sensorDataQuery->DeviceId=$gatewayID;
+$sensorDataQuery->DeviceId=$deviceID;
 $sensorDataQuery->ApiTags=$sensorApiTag;
 $sensorDataQuery->Method=6;
 $sensorDataQuery->StartDate="2018-01-01 00:00:00";
@@ -430,7 +428,7 @@ var_dump($response);
 
 echo "</br ></br ><b>发送命令/控制设备:</br ></b>";
 
-$response = $nleApi->Cmds($gatewayID, $actuatorApiTag, 0, $token);
+$response = $nleApi->Cmds($deviceID, $actuatorApiTag, 0, $token);
 if (!$response)
 {
     //处理错误信息
